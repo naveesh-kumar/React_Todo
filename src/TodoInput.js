@@ -1,11 +1,13 @@
 import React from "react";
 import Button from "./Button";
+import { connect } from "react-redux";
+import { addTodoAction } from "./Store/action.js";
 
 function TodoInput(props) {
   const inputRef = React.useRef();
 
-  if(props.todo){
-    inputRef.current.value = props.todo.value;
+  if (props?.todo) {
+    inputRef.current.value = props.todo;
   }
 
   return (
@@ -16,18 +18,28 @@ function TodoInput(props) {
         className="todo-input"
         ref={inputRef}
         onKeyPress={(e) => {
-          if(e.key=="Enter") props.clickHandler(inputRef, props.todo?.index)
+          if (e.key == "Enter") props.addTodo(inputRef);
         }}
       />
       <Button
-        style={{color:props.color}}
+        style={{ color: props.color }}
         text="Add todo"
         clickHandler={() => {
-          props.clickHandler(inputRef, props.todo?.index);
+          props.addTodo(inputRef);
         }}
       />
     </div>
   );
 }
 
-export default TodoInput;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addTodo: (inputRef) => {
+      let todo = inputRef.current.value;
+      inputRef.current.value=""
+      dispatch(addTodoAction(todo));
+    },
+  };
+};
+
+export default connect(null, mapDispatchToProps)(TodoInput);
